@@ -1,0 +1,36 @@
+name       : qmc2
+version    : 0.195
+release    : 1
+source     :
+    - http://sourceforge.net/projects/qmc2/files/qmc2/0.195/qmc2-0.195.tar.bz2 : 44b36a80ab7cd23e0efc3e0296ea680b38dd122319379bf6a4dcb9c2111183e7
+license    : GPL-2.0-or-later
+component  : games.emulator
+summary    : A GUI frontend for MAME
+description: |
+    QMC2 is a Qt-based multi-platform GUI front end for MAME.
+builddeps  :
+    - pkgconfig(minizip)
+    - pkgconfig(Qt5Svg)
+    - pkgconfig(Qt5XmlPatterns)
+    - pkgconfig(Qt5WebKit)
+    - pkgconfig(sdl2)
+    - rsync # For installation
+rundeps    :
+    - mame
+setup      : |
+    %patch -p1 < $pkgfiles/0001-Replace-sdlmame-with-mame.patch
+    %patch -p1 < $pkgfiles/0002-Skip-wizard.patch
+build      : |
+    %make BROWSER_EXTRAS=0 \
+          BROWSER_JAVA=0 \
+          BROWSER_JAVASCRIPT=0 \
+          BROWSER_PLUGINS=0 \
+          MULTIMEDIA=0 \
+          PHONON=0 \
+          SYSTEM_MINIZIP=1 \
+          SYSTEM_ZLIB=1
+    %make doc
+install    : |
+    %make_install PREFIX=/usr
+    %make doc-install PREFIX=$installdir/usr
+    mv $installdir/usr/man/man6/qmc2-sdlmame.6.gz $installdir/usr/man/man6/qmc2-mame.6.gz

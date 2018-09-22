@@ -1,0 +1,91 @@
+From 0d77fb9f293be4d83df34b3e2a559e708c408aea Mon Sep 17 00:00:00 2001
+From: livingsilver94 <fabio0x@keemail.me>
+Date: Sat, 8 Sep 2018 13:55:14 +0200
+Subject: [PATCH] Skip wizard
+
+---
+ qmc2main.cpp    | 9 ++++++++-
+ setupwizard.cpp | 2 --
+ setupwizard.h   | 6 ++++--
+ 3 files changed, 12 insertions(+), 5 deletions(-)
+
+diff --git a/qmc2main.cpp b/qmc2main.cpp
+index 3f58f14..62ad70c 100644
+--- a/qmc2main.cpp
++++ b/qmc2main.cpp
+@@ -9,6 +9,7 @@
+ #include <QTimer>
+ #include <QTime>
+ #include <QFile>
++#include <QFileInfo>
+ #include <QMap>
+ #include <QMultiMap>
+ #include <QHash>
+@@ -73,6 +74,7 @@
+ #include "iconlineedit.h"
+ #include "cookiejar.h"
+ #include "networkaccessmanager.h"
++#include "setupwizard.h"
+ #if QMC2_JOYSTICK == 1
+ #include "joystick.h"
+ #endif
+@@ -10918,7 +10920,12 @@ int main(int argc, char **argv)
+ 	int checkReturn = QDialog::Accepted;
+ 	qmc2Welcome = new Welcome(0);
+ 	if ( !qmc2Welcome->checkOkay ) {
+-		checkReturn = qmc2Welcome->exec();
++		SetupWizard wizard(qmc2Welcome->startupConfig, qmc2Welcome);
++		QString home_ini = QDir::homePath() + "/.mame/mame.ini";
++		wizard.m_emulatorIniPath = (QFileInfo::exists(home_ini)) ? home_ini : "/usr/share/mame/mame.ini";
++		wizard.importMameIni();
++		wizard.m_customSettings->setValue(QMC2_EMULATOR_PREFIX + "FilesAndDirectories/ExecutableFile", "/usr/share/mame/mame");
++		wizard.accept();
+ 		qmc2TemplateCheck = false;
+ 	}
+ 	if ( checkReturn != QDialog::Accepted )
+diff --git a/setupwizard.cpp b/setupwizard.cpp
+index ccc3fd0..af3ef56 100644
+--- a/setupwizard.cpp
++++ b/setupwizard.cpp
+@@ -356,8 +356,6 @@ void SetupWizard::importMameIni()
+ 		QTextStream ts(&iniFile);
+ 		int lineCounter = 0;
+ 		while ( !ts.atEnd() ) {
+-			if ( lineCounter % 10 )
+-				qApp->processEvents();
+ 			QString lineTrimmed(ts.readLine().trimmed());
+ 			if ( !lineTrimmed.isEmpty() && !lineTrimmed.startsWith('#') && !lineTrimmed.startsWith("<UNADORNED") ) {
+ 				QStringList tokens(lineTrimmed.split(QRegExp("\\s+"), QString::SkipEmptyParts));
+diff --git a/setupwizard.h b/setupwizard.h
+index b624be7..af26afc 100644
+--- a/setupwizard.h
++++ b/setupwizard.h
+@@ -74,13 +74,16 @@ class SetupWizard : public QWizard, public Ui::SetupWizard
+ 		void on_toolButtonBrowseUiIni_clicked();
+ 		void on_comboBoxLanguage_currentIndexChanged(int index);
+ 
++	public:
++		CustomSettings *m_customSettings;
++		QString m_emulatorIniPath;
++
+ 	protected:
+ 		int nextId() const;
+ 		void initializePage(int id);
+ 
+ 	private:
+ 		QSettings *m_startupConfig;
+-		QString m_emulatorIniPath;
+ 		QString m_frontendIniPath;
+ 		QString m_listfullSha1;
+ 		QString m_emuConfigName;
+@@ -94,7 +97,6 @@ class SetupWizard : public QWizard, public Ui::SetupWizard
+ 		ClickableLabel *m_labelImportUiIni;
+ 		ClickableLabel *m_labelImportBothInis;
+ 		ClickableLabel *m_labelImportNothing;
+-		CustomSettings *m_customSettings;
+ 		QHash<QString, QString> m_uiToQmc2Hash;
+ };
+ 
+-- 
+2.18.0
+

@@ -1,0 +1,17 @@
+libQt5Core.so.5
+libQt5Gui.so.5
+libQt5Network.so.5
+libQt5Sql.so.5
+libQt5Test.so.5
+libQt5WebKit.so.5
+libQt5WebKitWidgets.so.5
+libQt5Widgets.so.5
+libQt5Xml.so.5
+libQt5XmlPatterns.so.5
+libSDL2-2.0.so.0
+libc.so.6
+libgcc_s.so.1
+libminizip.so.1
+libpthread.so.0
+libstdc++.so.6
+libz.so.1

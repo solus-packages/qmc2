@@ -1,0 +1,34 @@
+From b4f3349344290b98175a1c92a25ae7e5394c2099 Mon Sep 17 00:00:00 2001
+From: livingsilver94 <fabio0x@keemail.me>
+Date: Sat, 1 Sep 2018 21:47:31 +0200
+Subject: [PATCH] Replace sdlmame with mame
+
+---
+ Makefile | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 7114cec..c05be89 100644
+--- a/Makefile
++++ b/Makefile
+@@ -557,7 +557,7 @@ VERSION_MINOR = 196
+ # complete version string
+ VERSION = $(VERSION_MAJOR).$(VERSION_MINOR)
+ 
+-ifneq '$(ARCH)' 'Windows'
++ifeq '$(ARCH)' 'Windows'
+ QMC2_EMULATOR = SDLMAME
+ else
+ QMC2_EMULATOR = MAME
+@@ -697,7 +697,7 @@ EMUICO = mame.png
+ GENERICNAME = M.A.M.E. Catalog / Launcher II
+ 
+ # target name (variant)
+-ifneq '$(ARCH)' 'Windows'
++ifeq '$(ARCH)' 'Windows'
+ TARGET_NAME = $(PROJECT)-sdlmame
+ else
+ TARGET_NAME = $(PROJECT)-mame
+-- 
+2.18.0
+
